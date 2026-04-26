@@ -14,5 +14,6 @@ void main(List<String> arguments) {
       }
     },
   )..addCommand(HelpCommand());
+
   commandRunner.run(arguments);
 }
