@@ -8,7 +8,13 @@ import 'exceptions.dart'; // Add this line
 
 class CommandRunner {
     // Add a constructor that accepts the optional callback.
-  CommandRunner({this.onError});
+  CommandRunner({this.onOutput, this.onError});
+
+  /// If not null, this method is used to handle output. Useful if you want to
+  /// execute code before the output is printed to the console, or if you
+  /// want to do something other than print output the console.
+  /// If null, the onInput method will [print] the output.
+  FutureOr<void> Function(String)? onOutput;
 
   final Map<String, Command> _commands = <String, Command>{};
 
@@ -24,7 +30,11 @@ class CommandRunner {
       final ArgResults results = parse(input);
       if (results.command != null) {
         Object? output = await results.command!.run(results);
-        print(output.toString());
+        if (onOutput != null) {
+          await onOutput!(output.toString());
+        } else { 
+          print(output.toString());
+        }
       }
     } on Exception catch (exception) {
         if (onError != null) {
